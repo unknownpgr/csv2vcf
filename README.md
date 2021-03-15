@@ -4,4 +4,4 @@ As club president, I needed to add a lot of contact information at once to handl
 
 ## Useage
 
-Just visit [https://unknownpgr.github.io/csv2vcf/]() to use it.
+Just visit [https://unknownpgr.github.io/csv2vcf/](https://unknownpgr.github.io/csv2vcf/) to use it.
