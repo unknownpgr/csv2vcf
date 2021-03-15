@@ -1,0 +1,10 @@
+{
+  "name": "csv2vcf",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "unknownpgr <unknownpgr@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "quoted-printable": "^1.0.1"
+  }
+}

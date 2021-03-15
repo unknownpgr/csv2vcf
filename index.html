@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV2VCF</title>
+    <script src="/node_modules/quoted-printable/quoted-printable.js"></script>
+    <script src="/node_modules/utf8/utf8.js"></script>
+    <script src="/papaparse.min.js"></script>
+    <style>
+        .container {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 3rem;
+        }
+
+        .center {
+            text-align: center;
+            margin: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>CSV2VCF</h1>
+        <p>
+            This site converts phone numbers stored in CSV files into VCF files so that you can easily store them in
+            your
+            contacts. The first column of the CSV file should be the name and the second column should be the phone
+            number.
+            The third and subsequent columns will be ignored.
+        </p>
+        <p>
+            The contact name will be encoded in UTF-8 using the Quoted-Printable format. Therefore, you can use special
+            characters or non-ASCII characters such as Hangul and Chinese characters.
+        </p>
+        <p>
+            Open the vcf file on your phone and the contacts app will handle importing your contacts automatically. (At
+            least on Android/Samsung)
+        </p>
+        <div class="center">
+            <input type="file" name="" id="csvFile" onchange='openFile(event)'>
+        </div>
+        <div class="center">
+            <a href="" id="download" hidden>Click here to download the converted vcf file</a>
+        </div>
+    </div>
+    <script>
+        function openFile(event) {
+            let input = event.target;
+
+            let reader = new FileReader();
+            reader.onload = function () {
+                try {
+                    let text = reader.result;
+                    let result = Papa.parse(text).data
+
+                    let vcf = result.map((row) => {
+                        if (row.length == 0) return;
+                        if (row[0].length == 0) return;
+
+                        encodedName = quotedPrintable.encode(utf8.encode(row[0]))
+
+                        s = ''
+                        s += 'BEGIN:VCARD\n'
+                        s += 'VERSION:2.1\n'
+                        s += 'N;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:' + encodedName + '\n'
+                        s += 'FN;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:' + encodedName + '\n'
+                        s += 'TEL;CELL:' + row[1] + '\n'
+                        s += 'END:VCARD\n'
+                        return s
+                    }).filter(x => x).join('')
+
+                    var file = new Blob([vcf], { type: 'text/plain' });
+                    download.href = URL.createObjectURL(file);
+                    download.download = 'Contacts.vcf';
+                    download.hidden = false
+                } catch (e) {
+                    alert('There were an error! : \n' + e.message)
+                }
+            };
+            reader.readAsText(input.files[0]);
+        };
+    </script>
+</body>
+
+</html>
